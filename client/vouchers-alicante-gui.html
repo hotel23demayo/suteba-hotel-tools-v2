@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vouchers Alicante</title>
+  <link rel="stylesheet" href="src/styles.css" />
+  <style>
+    .drop{border:2px dashed #888;padding:20px;text-align:center;margin-bottom:12px;cursor:pointer}
+    .drop:hover{background:#f9f9f9}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .field{display:flex;flex-direction:column;gap:6px;min-width:260px;flex:1}
+    .field input[type="text"]{padding:10px;font-size:14px}
+    .status{margin-top:10px;min-height:22px}
+  </style>
+</head>
+<body>
+  <header class="header-container">
+    <div style="display:flex;align-items:center;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <div class="logo-initial"><img src="../assets/suteba_logo_3.jpg" alt="Logo" style="width:84px;border-radius:6px"></div>
+      <div>
+        <h1 class="h1-initial" style="margin:0;font-size:20px;">Vouchers Alicante</h1>
+        <div class="h2-initial" style="font-size:14px;margin-top:6px;">Generación de vouchers desde navegador</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h3 style="margin-top:0">1) Cargar CSV</h3>
+      <div class="drop" id="dropArea">Arrastrá un archivo CSV aquí, o <input type="file" id="csvInput" accept=".csv" /></div>
+      <div style="margin-top:8px;">
+        <button id="pickCsvDownloadsBtn" class="menu-button secondary" type="button">Seleccionar CSV (Descargas)</button>
+      </div>
+      <div id="csvInfo"></div>
+
+      <h3 style="margin-top:20px">2) Plantilla PDF</h3>
+      <div class="row">
+        <div class="field">
+          <label for="templateInput">Plantilla activa (fija)</label>
+          <input type="text" id="templateInput" value="VOUCHER ALICANTE.pdf" disabled />
+        </div>
+      </div>
+      <div id="templateInfo" style="margin-top:8px;color:#555"></div>
+
+      <h3 style="margin-top:20px">3) Generar PDF</h3>
+      <div class="row">
+        <div class="field">
+          <label for="outputName">Nombre de salida</label>
+          <input type="text" id="outputName" value="Vouchers_Alicante.pdf" />
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+        <button id="generateBtn" class="menu-button" type="button" disabled>Generar vouchers</button>
+      </div>
+
+      <div style="margin-top:22px;">
+        <a href="../index.html" class="menu-button secondary">⬅️ Volver al Menú</a>
+      </div>
+
+      <div id="status" class="status"></div>
+      <div id="summary" style="margin-top:8px;color:#555"></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  <script src="js/vouchersAlicanteGui.js"></script>
+</body>
+</html>

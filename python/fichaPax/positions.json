@@ -1,0 +1,18 @@
+{
+  "description": "Mapa de campos extraído de generar_con_overlay.py (coordenadas en mm). Las coordenadas indican distancia desde el borde izquierdo (x_mm) y desde el borde superior (y_top_mm). El cliente debe convertir mm -> pt y calcular y = pageHeight - y_top_mm * mm_to_pt.",
+  "page": { "size": "A4" },
+  "fields": {
+    "Apellido y nombre": { "x_mm": 70, "y_top_mm": 57, "size": 10, "font": "Helvetica" },
+    "TipoDocumento_Nro": { "x_mm": 80, "y_top_mm": 65, "size": 10, "font": "Helvetica" },
+    "Telefono": { "x_mm": 80, "y_top_mm": 72, "size": 10, "font": "Helvetica" },
+    "Email": { "x_mm": 130, "y_top_mm": 72, "size": 10, "font": "Helvetica" },
+    "Sede": { "x_mm": 45, "y_top_mm": 95, "size": 10, "font": "Helvetica" },
+    "Fecha de nacimiento": { "x_mm": 162, "y_top_mm": 65, "size": 10, "font": "Helvetica" },
+    "Acomp": { "x_mm_name": 45, "x_mm_doc": 105, "y_first_top_mm": 115, "spacing_mm": 7, "max": 3, "size": 9, "font": "Helvetica" },
+    "NroHabitacion": { "x_mm": 110, "y_top_mm": 187, "size": 10, "font": "Helvetica" },
+    "FechaIngreso": { "x_mm": 75, "y_top_mm": 173, "size": 10, "font": "Helvetica" },
+    "FechaEgreso": { "x_mm": 142, "y_top_mm": 173, "size": 10, "font": "Helvetica" },
+    "Servicios": { "x_mm_desayuno": 75, "x_mm_media": 113, "x_mm_completa": 140, "y_top_mm": 198, "size": 10, "font": "Helvetica" },
+    "Voucher": { "x_mm": 80, "y_top_mm": 40, "size": 11, "font": "Helvetica-Bold" }
+  }
+}

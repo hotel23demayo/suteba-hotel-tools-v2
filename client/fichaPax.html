@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Generador de Fichas - fichaPax</title>
+  <link rel="stylesheet" href="src/styles.css">
+  <style>
+    .drop{border:2px dashed #888;padding:20px;text-align:center;margin-bottom:10px;cursor:pointer}
+    .drop:hover{background:#f9f9f9}
+    .controls{margin-top:12px}
+  </style>
+</head>
+<body>
+  <header class="header-container">
+    <div style="display:flex;align-items:center;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <div class="logo-initial"><img src="../assets/suteba_logo_3.jpg" alt="Logo" style="width:84px;border-radius:6px"></div>
+      <div>
+        <h1 class="h1-initial" style="margin:0;font-size:20px;">Generador de Fichas (fichaPax)</h1>
+        <div class="h2-initial" style="font-size:14px;margin-top:6px;">Automatiza la creación de fichas de check‑in desde CSV</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="drop" id="dropArea">Arrastra un archivo CSV aquí, o <input type="file" id="fileInput" accept=".csv" /></div>
+      <div id="fileInfo"></div>
+
+      <div class="controls" id="controlsArea" style="display:none">
+        <h3>Buscar pasajero</h3>
+        <input type="text" id="searchInput" placeholder="Buscar por voucher, DNI o apellido..." style="width:100%;max-width:600px;padding:10px;font-size:14px;margin-bottom:16px" />
+        <span id="status" style="margin-left:8px;display:block;margin-bottom:12px"></span>
+        <div id="searchResults" style="margin-top:12px"></div>
+      </div>
+
+      <div id="previewArea" style="display:none;margin-top:20px">
+        <h4>Vista previa</h4>
+        <iframe id="previewFrame" title="preview" style="width:100%;height:600px;border:1px solid #ccc"></iframe>
+      </div>
+
+      <hr style="margin:18px 0;border:none;border-top:1px solid #eee">
+      <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:8px;flex-wrap:wrap;">
+        <a href="../index.html" class="menu-button secondary">⬅️ Volver al Menú</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="js/fichaPax.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Vouchers Media Pensión</title>
+    <link rel="stylesheet" href="src/styles.css">
+    <style>
+        .drop{border:2px dashed #888;padding:30px;text-align:center;margin:20px auto;cursor:pointer;max-width:600px;border-radius:8px;background:#fafafa}
+        .drop:hover{background:#f0f0f0;border-color:#555}
+        .drop input[type="file"]{margin-top:8px}
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="logo-initial">
+            <img src="../assets/suteba_logo_3.jpg" alt="Logo" style="width: 100px;">
+        </div>
+        <h1 class="h1-initial">Generador de Vouchers de Comida</h1>
+        <h2 class="h2-initial">Media Pensión (MAP) - Cena</h2>
+        
+        <!-- Botón volver -->
+        <div style="text-align: center; margin: 10px 0;">
+            <a href="../index.html" style="padding: 8px 16px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px; font-size: 14px; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#5a6268'" onmouseout="this.style.backgroundColor='#6c757d'">⬅️ Volver al Menú</a>
+        </div>
+        
+        <!-- Advertencias y avisos -->
+        <div id="warnings" style="text-align:center; color:#856404; background:#fff3cd; border:1px solid #ffeeba; padding:8px; margin:12px auto; display:none; max-width:720px; border-radius:6px;"></div>
+
+        <!-- Área de carga con Drag & Drop -->
+        <div class="drop" id="dropArea">
+            📂 Arrastra un archivo CSV aquí, o <input type="file" id="fileInput" accept=".csv" />
+        </div>
+    </div>
+
+    <div id="resultContainer">
+        <div id="resultOutput"></div>
+        <div id="noDataMessage" style="display: none; text-align: center; margin: 20px; font-size: 25px; font-weight: bold; color: rgb(167, 50, 50);">
+            No hay datos con el servicio seleccionado
+        </div>
+        
+        <div class="print-buttons-container">
+            <button class="print-button" onclick="printContent()">
+                <span>🖨️</span> Imprimir
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="src/lib/parser.js"></script>
+    <script src="src/lib/business.js"></script>
+    <script src="src/lib/render.js"></script>
+    <script src="src/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+# Datos sensibles exportados por la aplicación
+consultaRegimenReport.csv
+
+# Proyectos ajenos a esta evolución
+solucionHotelera/
+stock2027/
+
+# Archivos temporales y respaldos
+*.tmp
+*.bak
+*~
+__pycache__/
+*.py[cod]
+
+# Archivos de prueba generados localmente
+test_overlay.pdf
+voucher_cena_*.pdf
+
+# Entornos virtuales y configuración local
+.venv/
+venv/
+.env
+
+# Acceso directo generado para una instalación local de Ubuntu
+SUTEBA-Hotel-Tools.desktop

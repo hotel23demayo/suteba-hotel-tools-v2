@@ -1,0 +1,15 @@
+🚀 Estado actual del proyecto
+Implementaciones completadas hoy:
+
+✅ Búsqueda individual en tiempo real (voucher/DNI/apellido)
+✅ Generación y descarga de PDF único por demanda
+✅ UI simplificada (sin tabla de 25+ columnas)
+✅ Normalización automática a mayúsculas (web + CLI)
+✅ CLI mantiene generación masiva para casos específicos
+💡 Mejoras sugeridas antes de migrar a base de datos
+1. Tracking de check-ins realizados ⭐ (Prioridad alta)
+Marcar vouchers como "✓ Procesado" después de generar ficha
+Persistir estado en localStorage (temporal)
+Mostrar contador: "8/35 check-ins realizados"
+Filtros: "Todos | Pendientes | Procesados"
+Beneficio: Control visual del progreso durante el turno

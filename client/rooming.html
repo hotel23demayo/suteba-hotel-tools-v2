@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesador de Reservas - SUTEBA</title>
+    <link rel="stylesheet" href="src/styles.css">
+    <style>
+        /* Estilos de Drag & Drop */
+        .drop{border:2px dashed #888;padding:30px;text-align:center;margin:20px auto;cursor:pointer;max-width:600px;border-radius:8px;background:#fafafa}
+        .drop:hover{background:#f0f0f0;border-color:#555}
+        .drop input[type="file"]{margin-top:8px}
+        
+        /* Estilos específicos para rooming */
+        #btnGuardar {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        #btnGuardar:hover {
+            background-color: #218838;
+        }
+
+		.field-selector {
+			max-width: 800px;
+			margin: 20px auto;
+			padding: 20px;
+			background: #f8f9fa;
+			border-radius: 8px;
+			border: 1px solid #dee2e6;
+		}
+
+		.field-selector h3 {
+			margin-top: 0;
+			color: #495057;
+			font-size: 18px;
+		}
+
+        #resultContainer {
+            margin: 20px auto;
+            max-width: 1000px;
+            text-align: center;
+        }
+
+        #resultOutput {
+            background-color: #f4f4f4;
+            padding: 10px;
+            white-space: pre-wrap;
+            margin-top: 20px;
+            font-size: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .back-button {
+            margin: 20px 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header-container">
+        <div class="logo-initial">
+            <img src="../assets/suteba_logo_3.jpg" alt="Logo SUTEBA" style="width: 100px;">
+        </div>
+        <h1 class="h1-initial">Procesador de Reservas Hoteleras</h1>
+        <h2 class="h2-initial">Rooming de las reservas que ingresan</h2>
+        
+        <div style="text-align: center; margin: 15px 0;">
+            <a href="../index.html" class="back-button">⬅️ Volver al Menú</a>
+        </div>
+        
+        <!-- Área de carga con Drag & Drop -->
+        <div class="drop" id="dropArea">
+            📂 Arrastra un archivo CSV aquí, o <input type="file" id="fileInput" accept=".csv" />
+        </div>
+    </div>
+
+	<div class="field-selector" id="fieldInfo" style="display: none;">
+		<h3>📋 Campos del Listado</h3>
+		<p style="color: #666; font-size: 14px; margin: 10px 0;">
+			Nro. habitación • Fecha de ingreso • Fecha de egreso • Cantidad plazas • Tipo documento • 
+			Nro. doc. • Apellido y nombre • Edad • Voucher • Servicio • Estado • Paquete • Sede • Observación habitación
+		</p>
+	</div>
+    
+	<div id="resultContainer">
+	    <h2>Listado de Reservas</h2>
+	    <div id="tableOutput"></div>
+	    <pre id="statsOutput"></pre>
+    	</div>
+    <script>
+	// --- SETUP DRAG & DROP ---
+	document.addEventListener('DOMContentLoaded', () => {
+	    const dropArea = document.getElementById('dropArea');
+	    const fileInput = document.getElementById('fileInput');
+	    
+	    if (dropArea && fileInput) {
+	        // Prevent defaults
+	        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+	            dropArea.addEventListener(eventName, preventDefaults, false);
+	        });
+	        
+	        // Highlight on drag
+	        ['dragenter', 'dragover'].forEach(eventName => {
+	            dropArea.addEventListener(eventName, () => dropArea.style.background = '#e0e0e0', false);
+	        });
+	        
+	        ['dragleave', 'drop'].forEach(eventName => {
+	            dropArea.addEventListener(eventName, () => dropArea.style.background = '#fafafa', false);
+	        });
+	        
+	        // Handle drop
+	        dropArea.addEventListener('drop', (e) => {
+	            const files = e.dataTransfer.files;
+	            if (files.length > 0) processFile(files[0]);
+	        }, false);
+	        
+	        // Handle file input
+	        fileInput.addEventListener('change', (e) => {
+	            if (e.target.files.length > 0) processFile(e.target.files[0]);
+	        });
+	    }
+	});
+	
+	function preventDefaults(e) {
+	    e.preventDefault();
+	    e.stopPropagation();
+	}
+	
+	// --- FUNCIONES PRINCIPALES ---
+
+	function processFile(file) {
+	    const reader = new FileReader();
+	    
+	    reader.onload = () => {
+	        const fileContents = reader.result;
+	        const resultObject = processData(fileContents); // Devuelve {data, stats, reservations}
+
+	        const tableContainer = document.getElementById('tableOutput');
+	        const statsOutput = document.getElementById('statsOutput');
+	        const fieldInfo = document.getElementById('fieldInfo');
+	        
+	        // 1. Mostrar Estadísticas y Limpiar
+	        statsOutput.textContent = resultObject.stats;
+	        tableContainer.innerHTML = ''; // Limpiar visualización anterior
+	        fieldInfo.style.display = 'block';
+
+	        // 2. Construir y Mostrar la Tabla con Datos Ordenados
+	        tableContainer.innerHTML = buildHTMLTable(resultObject.reservations);
+
+	        // 3. Crear o Actualizar el Botón de Guardar
+	        let downloadButton = document.getElementById('btnGuardar');
+	        if (!downloadButton) {
+	            downloadButton = document.createElement('button');
+	            downloadButton.textContent = 'Guardar como archivo CSV (LibreOffice compatible)';
+	            downloadButton.id = 'btnGuardar';
+	            // Añadir el botón al contenedor principal (fuera de la tabla)
+	            document.getElementById('resultContainer').appendChild(downloadButton); 
+	        }
+	        
+	        // Asignar la función de descarga al botón (usa resultObject.data limpia)
+	        downloadButton.onclick = () => {
+	            const csvDataFinal = addHeadersToCSV(resultObject.data);
+	            downloadCSV(csvDataFinal, 'reservas_ingresan.csv');
+	        };
+	    };
+
+	    reader.readAsText(file);
+	}
+
+	function handleFileSelect() {
+	    const fileInput = document.getElementById('fileInput');
+	    if (fileInput) {
+	        fileInput.click();
+	    }
+	}
+
+	function processData(fileContents) {
+	    var lines = fileContents.split('\n');
+	    var reservations = [];
+	    var roomCount = {}; // Objeto para contar habitaciones ocupadas
+	    var peopleCount = 0; // Variable para contar personas
+
+	    // Omitir el encabezado (i = 1)
+	    for (var i = 1; i < lines.length; i++) {
+		var line = lines[i].trim();
+		if (line === '') continue;
+
+		// Parser CSV con separación por comas
+		var fields = line.split(',');
+
+		// Corrección para CSV con comas extras en campo Observación (columna 4)
+		const EXPECTED_FIELDS_COUNT = 28; // Número esperado de campos en el CSV
+		if (fields.length > EXPECTED_FIELDS_COUNT) {
+		    const extraFields = fields.length - EXPECTED_FIELDS_COUNT;
+		    const endObservationIndex = 4 + extraFields;
+
+		    // Recombinar los campos extras como un solo campo Observación
+		    const correctedObservation = fields.slice(4, endObservationIndex + 1).join('; ');
+
+		    // Reconstruir el array con la observación corregida
+		    fields = [
+		        ...fields.slice(0, 4),        // Campos 0-3
+		        correctedObservation,          // Campo 4 (Observación corregida)
+		        ...fields.slice(endObservationIndex + 1)  // Campos 5 en adelante
+		    ];
+		}
+
+		// Validar que la línea tenga suficientes campos
+		if (fields.length < 15) continue;
+
+		// --- EXTRACCIÓN DE CAMPOS RELEVANTES (igual que reserva.html) ---
+		var roomNumber = fields[2];
+		var din = fields[8];
+		var dout = fields[9];
+		var plazas = fields[5];
+		var tipoDoc = fields[11];
+		var dni = fields[12];
+		var passengerName = fields[13];
+		var age = fields[14];
+		var voucher = fields[6];
+		var services = fields[16];
+		var state = fields[23];
+		var paquete = fields[17];
+		var sede = fields[7];
+		var observacion = fields[4];
+
+		// Crear objeto de reserva (una fila por pasajero)
+		var reservation = {
+		    'Nro. habitación': roomNumber,
+		    'Fecha de ingreso': din,
+		    'Fecha de egreso': dout,
+		    'Cantidad plazas': plazas,
+		    'Tipo documento': tipoDoc,
+		    'Nro. doc.': dni,
+		    'Apellido y nombre': passengerName.toUpperCase(),
+		    'Edad': age,
+		    'Voucher': voucher,
+		    'Servicio': services,
+		    'Estado': state,
+		    'Paquete': paquete,
+		    'Sede': sede,
+		    'Observación habitación': observacion
+		};
+
+		reservations.push(reservation);
+
+		// Contar habitaciones y personas
+		if (!roomCount[roomNumber]) {
+		    roomCount[roomNumber] = 0;
+		}
+		roomCount[roomNumber]++;
+		peopleCount++;
+	    }
+
+	    // Ordenar por habitación
+	    reservations.sort((a, b) => {
+		var roomA = parseInt(a['Nro. habitación'].replace(/[^\d]/g, '')) || 0;
+		var roomB = parseInt(b['Nro. habitación'].replace(/[^\d]/g, '')) || 0;
+		return roomA - roomB;
+	    });
+
+	    // --- CONVERSIÓN A STRING CSV (Para la descarga) ---
+	    var csvOutputData = reservations.map(res => {
+		return Object.values(res).join(';');
+	    }).join('\n');
+
+	    // Generar las estadísticas por separado
+	    var statsOutput = 
+		'Habitaciones que se ocupan: ' + Object.keys(roomCount).length + '\n' +
+		'Cantidad de pax: ' + peopleCount + '\n';
+
+	    return {
+		data: csvOutputData,
+		stats: statsOutput,
+		reservations: reservations
+	    };
+	}
+
+	// --- FUNCIONES AUXILIARES ---
+
+	function buildHTMLTable(reservations) {
+	    if (reservations.length === 0) return '<p>No se encontraron reservas.</p>';
+
+	    // Usamos las claves del primer objeto para los encabezados
+	    const headers = Object.keys(reservations[0]); 
+	    
+	    let html = '<table style="width:100%; border-collapse: collapse; margin-top: 15px;">';
+	    
+	    // Encabezados de la tabla
+	    html += '<thead><tr>';
+	    headers.forEach(header => {
+		html += `<th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2; text-align: left;">${header}</th>`;
+	    });
+	    html += '</tr></thead>';
+
+	    // Cuerpo de la tabla
+	    html += '<tbody>';
+	    reservations.forEach(res => {
+		html += '<tr>';
+		headers.forEach(key => {
+		    let cellContent = res[key];
+		    // Resaltamos con negrita el Nro. Habitación y Nombre
+		    if (key === 'Nro. habitación' || key === 'Apellido y nombre') {
+		        cellContent = `<b>${cellContent}</b>`;
+		    }
+		    html += `<td style="border: 1px solid #ddd; padding: 8px;">${cellContent}</td>`;
+		});
+		html += '</tr>';
+	    });
+	    html += '</tbody></table>';
+
+	    return html;
+	}
+
+	function addHeadersToCSV(csvData) {
+	    // Encabezados con punto y coma (;) para compatibilidad con LibreOffice
+	    var headers = 'Nro. habitación;Fecha de ingreso;Fecha de egreso;Cantidad plazas;Tipo documento;Nro. doc.;Apellido y nombre;Edad;Voucher;Servicio;Estado;Paquete;Sede;Observación habitación\n';
+	    return headers + csvData;
+	}
+
+	// Función de descarga
+	function downloadCSV(csv, filename) {
+	    var csvFile = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' }); // Agregado BOM para mejor compatibilidad
+
+	    if (window.navigator.msSaveBlob) {
+		// IE 10+
+		window.navigator.msSaveBlob(csvFile, filename);
+	    } else {
+		// Otros navegadores
+		var downloadLink = document.createElement('a');
+		downloadLink.href = URL.createObjectURL(csvFile);
+		downloadLink.setAttribute('download', filename);
+		downloadLink.style.display = 'none'; // Asegurar que no se muestre
+		document.body.appendChild(downloadLink);
+		downloadLink.click();
+		document.body.removeChild(downloadLink);
+	    }
+	}
+
+	// --- PARSER CSV ROBUSTO ---
+	// Esta función maneja correctamente campos con comas entre comillas
+	function parseCSVLine(line) {
+	    const fields = [];
+	    let field = '';
+	    let insideQuotes = false;
+	    
+	    for (let i = 0; i < line.length; i++) {
+		const char = line[i];
+		const nextChar = line[i + 1];
+		
+		if (char === '"') {
+		    if (insideQuotes && nextChar === '"') {
+		        // Comillas dobles escapadas ""
+		        field += '"';
+		        i++; // Saltar la siguiente comilla
+		    } else {
+		        // Alternar estado de dentro/fuera de comillas
+		        insideQuotes = !insideQuotes;
+		    }
+		} else if (char === ',' && !insideQuotes) {
+		    // Coma fuera de comillas = separador de campo
+		    fields.push(field);
+		    field = '';
+		} else {
+		    field += char;
+		}
+	    }
+	    
+	    // Añadir el último campo
+	    fields.push(field);
+	    
+	    return fields;
+	}
+
+    </script>
+</body>
+
+</html>
+

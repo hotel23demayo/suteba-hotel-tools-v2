@@ -1,0 +1,55 @@
+{
+    "description": "Posiciones iniciales para overlay sobre VOUCHER_ALICANTE.pdf",
+    "unit": "mm",
+    "template": "VOUCHER_ALICANTE.pdf",
+    "page": {
+        "width_mm": 210,
+        "height_mm": 297,
+        "orientation": "portrait",
+        "vouchers_per_page": 3
+    },
+    "manualVoucher": {
+        "hotel": {
+            "x_mm": 136,
+            "y_from_bottom_mm": 246,
+            "cover": {
+                "x_mm": 104,
+                "y_from_bottom_mm": 243.5,
+                "width_mm": 65,
+                "height_mm": 7
+            }
+        },
+        "pageCrop": {
+            "x_mm": 0,
+            "y_from_bottom_mm": 201,
+            "width_mm": 210,
+            "height_mm": 96
+        }
+    },
+    "slots": [
+        {
+            "nombre": {"x_mm": 27, "y_from_bottom_mm": 257},
+            "dni": {"x_mm": 22, "y_from_bottom_mm": 246},
+            "habitaciones": {"x_mm": 27, "y_from_bottom_mm": 233},
+            "fechaIngreso": {"x_mm": 96, "y_from_bottom_mm": 233},
+            "fechaEgreso": {"x_mm": 146, "y_from_bottom_mm": 233},
+            "cantidadPersonas": {"x_mm": 55, "y_from_bottom_mm": 228}
+        },
+        {
+            "nombre": {"x_mm": 27, "y_from_bottom_mm": 167},
+            "dni": {"x_mm": 22, "y_from_bottom_mm": 156},
+            "habitaciones": {"x_mm": 27, "y_from_bottom_mm": 143},
+            "fechaIngreso": {"x_mm": 96, "y_from_bottom_mm": 143},
+            "fechaEgreso": {"x_mm": 146, "y_from_bottom_mm": 143},
+            "cantidadPersonas": {"x_mm": 55, "y_from_bottom_mm": 138}
+        },
+        {
+            "nombre": {"x_mm": 27, "y_from_bottom_mm": 77},
+            "dni": {"x_mm": 22, "y_from_bottom_mm": 66},
+            "habitaciones": {"x_mm": 27, "y_from_bottom_mm": 53},
+            "fechaIngreso": {"x_mm": 96, "y_from_bottom_mm": 53},
+            "fechaEgreso": {"x_mm": 146, "y_from_bottom_mm": 53},
+            "cantidadPersonas": {"x_mm": 55, "y_from_bottom_mm": 48}
+        }
+    ]
+}

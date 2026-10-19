@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voucher de Comida Diario</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #f4f4f4;
+            color: #333;
+        }
+
+        .site-header {
+            border-bottom: 1px solid #ddd;
+            padding: 14px 24px;
+            background: #fff;
+        }
+
+        .site-header-content {
+            display: flex;
+            width: min(640px, 100%);
+            align-items: center;
+            gap: 14px;
+            margin: 0 auto;
+        }
+
+        .site-logo {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+        }
+
+        .site-title {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .home-link {
+            margin-left: auto;
+            color: #007bff;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        main {
+            width: min(640px, calc(100% - 32px));
+            margin: 28px auto;
+        }
+
+        .home-link:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        .home-link:focus-visible {
+            outline: 3px solid #80bdff;
+            outline-offset: 3px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            padding: 28px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 24px;
+        }
+
+        .intro {
+            margin: 0 0 24px;
+            color: #666;
+        }
+
+        form {
+            display: grid;
+            gap: 16px;
+        }
+
+        label {
+            display: grid;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        .full-width { grid-column: 1 / -1; }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #c8cdd2;
+            border-radius: 4px;
+            padding: 11px 12px;
+            font: inherit;
+        }
+
+        select {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #c8cdd2;
+            border-radius: 4px;
+            padding: 11px 12px;
+            font: inherit;
+            background: #fff;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 4px;
+            padding: 12px 18px;
+            background: #007bff;
+            color: #fff;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover { background: #0056b3; }
+
+        #status {
+            min-height: 24px;
+            margin-top: 18px;
+            color: #007bff;
+        }
+
+        #status.error { color: #a52727; }
+
+        @media (max-width: 560px) {
+            .site-header { padding: 12px 16px; }
+            .site-logo { width: 48px; height: 48px; }
+            .site-header-content { gap: 10px; }
+            .site-title { font-size: 17px; }
+            .home-link { font-size: 13px; }
+            main { margin: 20px auto; }
+            .card { padding: 20px; }
+            .two-columns { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 420px) {
+            .site-header-content { flex-wrap: wrap; }
+            .home-link {
+                width: 100%;
+                margin-left: 58px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-content">
+            <img class="site-logo" src="../assets/suteba_logo_3.jpg" alt="SUTEBA">
+            <p class="site-title">Solución Hotelera</p>
+            <a class="home-link" href="../index.html">&#8592; Volver al inicio</a>
+        </div>
+    </header>
+    <main>
+        <section class="card">
+            <h1>Voucher de Comida Diario</h1>
+            <p class="intro">Completa los datos del huésped alojado para generar el voucher de cena.</p>
+
+            <form id="mealVoucherForm">
+                <label>
+                    Apellido y nombre
+                    <input id="nombre" name="nombre" type="text" autocomplete="name" required>
+                </label>
+
+                <div class="two-columns">
+                    <label class="full-width">
+                        Hotel
+                        <select id="hotel" name="hotel">
+                            <option value="23 DE MAYO" selected>23 de Mayo</option>
+                            <option value="31 DE AGOSTO">31 de Agosto</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        DNI
+                        <input id="dni" name="dni" type="text" inputmode="numeric" autocomplete="off" required>
+                    </label>
+
+                    <label>
+                        Habitación
+                        <input id="habitacion" name="habitacion" type="text" autocomplete="off" required>
+                    </label>
+                </div>
+
+                <div class="two-columns">
+                    <label>
+                        Fecha
+                        <input id="fecha" name="fecha" type="date" required>
+                    </label>
+
+                    <label>
+                        Cantidad de personas
+                        <input id="cantidadPersonas" name="cantidadPersonas" type="number" min="1" step="1" value="1" required>
+                    </label>
+                </div>
+
+                <button type="submit">Generar voucher</button>
+            </form>
+            <p id="status" role="status" aria-live="polite"></p>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="js/mealVoucher.js"></script>
+</body>
+</html>

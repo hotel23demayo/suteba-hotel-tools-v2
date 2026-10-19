@@ -1,0 +1,45 @@
+
+{
+    "description": "Coordenadas transformadas proporcionalmente para la plantilla de 210 x 96 mm. Pendientes de validación visual.",
+    "unit": "mm",
+    "page": {
+        "width_mm": 210,
+        "height_mm": 96,
+        "orientation": "landscape"
+    },
+    "template": "VOUCHER_DE_COMIDAS_DIARIO.pdf",
+    "fields": {
+        "nombre": {
+            "x_mm": 48.39,
+            "y_top_mm": 43.35,
+            "status": "transformada proporcionalmente"
+        },
+        "dni": {
+            "x_mm": 169.66,
+            "y_top_mm": 43.35,
+            "status": "transformada proporcionalmente"
+        },
+        "hotel": {
+            "x_mm": 71.12,
+            "y_top_mm": 52.55,
+            "width_mm": 112.38,
+            "status": "transformada proporcionalmente; pendiente de revisión visual",
+            "align": "center"
+        },
+        "fecha": {
+            "x_mm": 163.57,
+            "y_top_mm": 52.55,
+            "status": "transformada proporcionalmente"
+        },
+        "habitacion": {
+            "x_mm": 36.91,
+            "y_top_mm": 64.85,
+            "status": "transformada proporcionalmente"
+        },
+        "cantidadPersonas": {
+            "x_mm": 194.83,
+            "y_top_mm": 64.85,
+            "status": "transformada proporcionalmente"
+        }
+    }
+}

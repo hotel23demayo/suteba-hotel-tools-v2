@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooming PPJ - SUTEBA</title>
+    <link rel="stylesheet" href="src/styles.css">
+    <style>
+        .drop{border:2px dashed #888;padding:30px;text-align:center;margin:20px auto;cursor:pointer;max-width:600px;border-radius:8px;background:#fafafa}
+        .drop:hover{background:#f0f0f0;border-color:#555}
+        .drop input[type="file"]{margin-top:8px}
+        
+        #btnGuardar {
+            margin-top: 15px;
+            padding: 12px 24px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        #btnGuardar:hover {
+            background-color: #218838;
+        }
+
+        .field-selector {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .field-selector h3 {
+            margin-top: 0;
+            color: #495057;
+            font-size: 18px;
+        }
+
+        .fields-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .field-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .field-checkbox:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+        }
+
+        .field-checkbox input[type="checkbox"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .field-checkbox label {
+            cursor: pointer;
+            user-select: none;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .selector-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .selector-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .selector-btn.select-all {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .selector-btn.select-all:hover {
+            background-color: #0056b3;
+        }
+
+        .selector-btn.deselect-all {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .selector-btn.deselect-all:hover {
+            background-color: #5a6268;
+        }
+
+        #resultContainer {
+            margin: 20px auto;
+            max-width: 95%;
+            text-align: center;
+        }
+
+        #resultOutput {
+            overflow-x: auto;
+        }
+
+        .back-button {
+            margin: 10px 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="logo-initial">
+            <img src="../assets/suteba_logo_3.jpg" alt="Logo SUTEBA" style="width: 100px;">
+        </div>
+        <h1 class="h1-initial">Procesador de Rooming List</h1>
+        <h2 class="h2-initial">Pensión Completa (PC) - Jubilados PPJ</h2>
+        
+        <div style="text-align: center; margin: 15px 0;">
+            <a href="../index.html" class="back-button">⬅️ Volver al Menú</a>
+        </div>
+        
+        <!-- Área de carga con Drag & Drop -->
+        <div class="drop" id="dropArea">
+            📂 Arrastra un archivo CSV aquí, o <input type="file" id="fileInput" accept=".csv" />
+        </div>
+    </div>
+
+    <!-- Información de campos -->
+    <div class="field-selector" id="fieldInfo" style="display: none;">
+        <h3>📋 Campos del Listado</h3>
+        <p style="color: #666; font-size: 14px; margin: 10px 0;">
+            Nro. habitación • Fecha de ingreso • Fecha de egreso • Cantidad plazas • Tipo documento • 
+            Nro. doc. • Apellido y nombre • Edad • Observación habitación • Tipo habitación 
+        </p>
+    </div>
+    
+    <div id="resultContainer">
+        <h2>Listado de Reservas</h2>
+        <div id="tableOutput"></div>
+        <pre id="statsOutput"></pre>
+    </div>
+    
+    <script>
+        // Campos fijos para el informe (orden específico requerido)
+        const REPORT_FIELDS = [
+            { key: 'roomNumber', label: 'Nro. habitación' },
+            { key: 'din', label: 'Fecha de ingreso' },
+            { key: 'dout', label: 'Fecha de egreso' },
+            { key: 'plazas', label: 'Cantidad plazas' },
+            { key: 'tipoDoc', label: 'Tipo documento' },
+            { key: 'dni', label: 'Nro. doc.' },
+            { key: 'passengerName', label: 'Apellido y nombre' },
+            { key: 'age', label: 'Edad' },
+            { key: 'observacion', label: 'Observación habitación' },
+            { key: 'tipoHab', label: 'Tipo habitación' }
+        ];
+
+        let allReservations = [];
+        let selectedFields = REPORT_FIELDS.map(f => f.key);
+
+        // --- SETUP DRAG & DROP ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropArea = document.getElementById('dropArea');
+            const fileInput = document.getElementById('fileInput');
+            
+            if (dropArea && fileInput) {
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, preventDefaults, false);
+                });
+                
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, () => dropArea.style.background = '#e0e0e0', false);
+                });
+                
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, () => dropArea.style.background = '#fafafa', false);
+                });
+                
+                dropArea.addEventListener('drop', (e) => {
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) processFile(files[0]);
+                }, false);
+                
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) processFile(e.target.files[0]);
+                });
+            }
+
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function processFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = () => {
+                const fileContents = reader.result;
+                const resultObject = processData(fileContents);
+
+                allReservations = resultObject.reservations;
+
+                document.getElementById('statsOutput').textContent = resultObject.stats;
+                document.getElementById('fieldInfo').style.display = 'block';
+                
+                renderResults();
+                
+                // Crear botón de descarga
+                let downloadButton = document.getElementById('btnGuardar');
+                if (!downloadButton) {
+                    downloadButton = document.createElement('button');
+                    downloadButton.textContent = '💾 Guardar como CSV (LibreOffice)';
+                    downloadButton.id = 'btnGuardar';
+                    document.getElementById('resultContainer').appendChild(downloadButton);
+                }
+                
+                downloadButton.onclick = () => {
+                    const filteredData = filterReservationsByFields(allReservations, selectedFields);
+                    const csvData = convertToCSV(filteredData);
+                    const csvWithHeaders = addHeadersToCSV(csvData, selectedFields);
+                    downloadCSV(csvWithHeaders, 'rooming_pc_jubilados.csv');
+                };
+            };
+
+            reader.readAsText(file);
+        }
+
+        function processData(fileContents) {
+            const lines = fileContents.split('\n');
+            const reservations = [];
+            const roomCount = {};
+            let peopleCount = 0;
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line === '') continue;
+
+                const fields = parseCSVLine(line);
+                if (fields.length < 15) continue;
+
+                const roomNumber = fields[2] || '';
+                const din = fields[8] || '';
+                const dout = fields[9] || '';
+                const plazas = fields[5] || '';
+                const tipoDoc = fields[11] || '';
+                const dni = fields[12] || '';
+                const passengerName = (fields[13] || '').toUpperCase();
+                const age = fields[14] || '';
+                const services = fields[16] || '';
+                const state = fields[23] || '';
+                const paquete = fields[17] || '';
+                const sede = fields[7] || '';
+                const observacion = fields[4] || '';
+
+                const tipoHab = fields[3] || '';
+                // Filtrar solo Pensión Completa
+                const servicesNormalized = services.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                if (!servicesNormalized.includes('PENSION COMPLETA')) {
+                    continue; // Ignorar filas que no son PC
+                }
+
+                const reservation = {
+                    roomNumber,
+                    din,
+                    dout,
+                    plazas,
+                    tipoDoc,
+                    dni,
+                    passengerName,
+                    age,
+                    tipoHab,
+                    services,
+                    state,
+                    paquete,
+                    sede,
+                    observacion
+                };
+
+                reservations.push(reservation);
+
+                if (!roomCount[roomNumber]) {
+                    roomCount[roomNumber] = 0;
+                }
+                roomCount[roomNumber]++;
+                peopleCount++;
+            }
+
+            // Ordenar por habitación y luego por nombre
+            reservations.sort((a, b) => {
+                const roomA = parseInt(a.roomNumber.replace(/[^\d]/g, '')) || 0;
+                const roomB = parseInt(b.roomNumber.replace(/[^\d]/g, '')) || 0;
+                if (roomA !== roomB) return roomA - roomB;
+                return a.passengerName.localeCompare(b.passengerName);
+            });
+
+            const statsOutput = 
+                'Habitaciones que se ocupan: ' + Object.keys(roomCount).length + '\n' +
+                'Cantidad de pax: ' + peopleCount + '\n';
+
+            return {
+                stats: statsOutput,
+                reservations: reservations
+            };
+        }
+
+        function renderResults() {
+            const filteredData = filterReservationsByFields(allReservations, selectedFields);
+            document.getElementById('tableOutput').innerHTML = buildHTMLTable(filteredData);
+        }
+
+        function filterReservationsByFields(reservations, fields) {
+            return reservations.map(res => {
+                const filtered = {};
+                fields.forEach(key => {
+                    const field = REPORT_FIELDS.find(f => f.key === key);
+                    if (field) {
+                        filtered[field.label] = res[key] || '';
+                    }
+                });
+                return filtered;
+            });
+        }
+
+        function buildHTMLTable(reservations) {
+            if (reservations.length === 0) return '<p>No se encontraron reservas con Pensión Completa.</p>';
+
+            const headers = Object.keys(reservations[0]);
+            
+            let html = '<table style="width:100%; border-collapse: collapse; margin-top: 15px;">';
+            
+            html += '<thead><tr>';
+            headers.forEach(header => {
+                html += `<th style="border: 1px solid #ddd; padding: 8px; background-color: #007bff; color: white; text-align: left;">${header}</th>`;
+            });
+            html += '</tr></thead>';
+
+            html += '<tbody>';
+            reservations.forEach((res, idx) => {
+                const bgColor = idx % 2 === 0 ? '#f9f9f9' : 'white';
+                html += `<tr style="background-color: ${bgColor};">`;
+                headers.forEach(key => {
+                    let cellContent = res[key];
+                    if (key === 'Nro. habitación' || key === 'Apellido y nombre') {
+                        cellContent = `<b>${cellContent}</b>`;
+                    }
+                    html += `<td style="border: 1px solid #ddd; padding: 8px;">${cellContent}</td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+
+            return html;
+        }
+
+        function convertToCSV(reservations) {
+            return reservations.map(res => Object.values(res).join(';')).join('\n');
+        }
+
+        function addHeadersToCSV(csvData, fields) {
+            const headers = fields.map(key => {
+                const field = REPORT_FIELDS.find(f => f.key === key);
+                return field ? field.label : key;
+            }).join(';');
+            return headers + '\n' + csvData;
+        }
+
+        function downloadCSV(csv, filename) {
+            const csvFile = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+
+            if (window.navigator.msSaveBlob) {
+                window.navigator.msSaveBlob(csvFile, filename);
+            } else {
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(csvFile);
+                downloadLink.setAttribute('download', filename);
+                downloadLink.style.display = 'none';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+        }
+
+        function parseCSVLine(line) {
+            const fields = [];
+            let field = '';
+            let insideQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const nextChar = line[i + 1];
+                
+                if (char === '"') {
+                    if (insideQuotes && nextChar === '"') {
+                        field += '"';
+                        i++;
+                    } else {
+                        insideQuotes = !insideQuotes;
+                    }
+                } else if (char === ',' && !insideQuotes) {
+                    fields.push(field);
+                    field = '';
+                } else {
+                    field += char;
+                }
+            }
+            
+            fields.push(field);
+            return fields;
+        }
+    </script>
+</body>
+</html>
