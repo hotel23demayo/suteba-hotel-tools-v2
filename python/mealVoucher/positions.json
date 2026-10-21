@@ -1,45 +1,60 @@
-
 {
-    "description": "Coordenadas transformadas proporcionalmente para la plantilla de 210 x 96 mm. Pendientes de validación visual.",
-    "unit": "mm",
-    "page": {
-        "width_mm": 210,
-        "height_mm": 96,
-        "orientation": "landscape"
+  "description": "Posiciones en puntos PDF para el nuevo voucher individual.",
+  "unit": "pt",
+  "template": "VOUCHER_DE_COMIDAS_DIARIO_NUEVO.pdf",
+  "page": {
+    "width_pt": 595.275,
+    "height_pt": 841.89
+  },
+  "crop": {
+    "x": 27.05,
+    "y": 631.989,
+    "width": 541.30,
+    "height": 192.90
+  },
+  "hotelCover": {
+    "x": 166,
+    "y": 709,
+    "width": 82,
+    "height": 15
+  },
+  "fields": {
+    "nombre": {
+      "x": 148,
+      "y": 737.5,
+      "maxWidth": 247,
+      "fontSize": 9
     },
-    "template": "VOUCHER_DE_COMIDAS_DIARIO.pdf",
-    "fields": {
-        "nombre": {
-            "x_mm": 48.39,
-            "y_top_mm": 43.35,
-            "status": "transformada proporcionalmente"
-        },
-        "dni": {
-            "x_mm": 169.66,
-            "y_top_mm": 43.35,
-            "status": "transformada proporcionalmente"
-        },
-        "hotel": {
-            "x_mm": 71.12,
-            "y_top_mm": 52.55,
-            "width_mm": 112.38,
-            "status": "transformada proporcionalmente; pendiente de revisión visual",
-            "align": "center"
-        },
-        "fecha": {
-            "x_mm": 163.57,
-            "y_top_mm": 52.55,
-            "status": "transformada proporcionalmente"
-        },
-        "habitacion": {
-            "x_mm": 36.91,
-            "y_top_mm": 64.85,
-            "status": "transformada proporcionalmente"
-        },
-        "cantidadPersonas": {
-            "x_mm": 194.83,
-            "y_top_mm": 64.85,
-            "status": "transformada proporcionalmente"
-        }
+    "dni": {
+      "x": 461,
+      "y": 737.5,
+      "maxWidth": 94,
+      "fontSize": 9
+    },
+    "hotel": {
+      "x1": 73.05,
+      "x2": 346.65,
+      "y": 713.5,
+      "fontSize": 10,
+      "align": "center"
+    },
+    "fecha": {
+      "x": 445,
+      "y": 713.5,
+      "maxWidth": 100,
+      "fontSize": 9
+    },
+    "habitacion": {
+      "x": 128.25,
+      "y": 685.5,
+      "fontSize": 8,
+      "align": "center"
+    },
+    "cantidadPersonas": {
+      "x": 535.85,
+      "y": 685.5,
+      "fontSize": 9,
+      "align": "center"
     }
+  }
 }
