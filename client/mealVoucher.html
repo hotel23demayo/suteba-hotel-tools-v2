@@ -18,51 +18,48 @@
         }
 
         .site-header {
-            border-bottom: 1px solid #ddd;
-            padding: 14px 24px;
-            background: #fff;
-        }
-
-        .site-header-content {
-            display: flex;
-            width: min(640px, 100%);
-            align-items: center;
-            gap: 14px;
-            margin: 0 auto;
+            padding: 16px 24px 8px;
+            text-align: center;
         }
 
         .site-logo {
-            width: 56px;
-            height: 56px;
+            width: 100px;
             object-fit: contain;
         }
 
-        .site-title {
-            margin: 0;
-            font-size: 20px;
+        .site-header h1 {
+            margin: 8px 0 4px;
+            font-size: 24px;
+        }
+
+        .site-header h2 {
+            margin: 0 0 10px;
+            font-size: 16px;
+            font-weight: 400;
+            color: #666;
         }
 
         .home-link {
-            margin-left: auto;
-            color: #007bff;
+            display: inline-block;
+            padding: 8px 16px;
+            background: #6c757d;
+            color: #fff;
+            border-radius: 5px;
             font-size: 14px;
-            font-weight: 700;
             text-decoration: none;
+            transition: background-color 0.3s;
         }
 
-        main {
-            width: min(640px, calc(100% - 32px));
-            margin: 28px auto;
-        }
-
-        .home-link:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
+        .home-link:hover { background: #5a6268; }
 
         .home-link:focus-visible {
             outline: 3px solid #80bdff;
             outline-offset: 3px;
+        }
+
+        main {
+            width: min(640px, calc(100% - 32px));
+            margin: 20px auto 28px;
         }
 
         .card {
@@ -143,36 +140,22 @@
         #status.error { color: #a52727; }
 
         @media (max-width: 560px) {
-            .site-header { padding: 12px 16px; }
-            .site-logo { width: 48px; height: 48px; }
-            .site-header-content { gap: 10px; }
-            .site-title { font-size: 17px; }
-            .home-link { font-size: 13px; }
-            main { margin: 20px auto; }
+            main { margin: 16px auto; }
             .card { padding: 20px; }
             .two-columns { grid-template-columns: 1fr; }
         }
 
-        @media (max-width: 420px) {
-            .site-header-content { flex-wrap: wrap; }
-            .home-link {
-                width: 100%;
-                margin-left: 58px;
-            }
-        }
     </style>
 </head>
 <body>
     <header class="site-header">
-        <div class="site-header-content">
-            <img class="site-logo" src="../assets/suteba_logo_3.jpg" alt="SUTEBA">
-            <p class="site-title">Solución Hotelera</p>
-            <a class="home-link" href="../index.html">&#8592; Volver al inicio</a>
-        </div>
+        <img class="site-logo" src="../assets/suteba_logo_3.jpg" alt="SUTEBA">
+        <h1>Voucher de Comida Diario</h1>
+        <h2>Media Pensión (MAP) - Cena</h2>
+        <a class="home-link" href="../index.html">&#11013;&#65039; Volver al Menú</a>
     </header>
     <main>
         <section class="card">
-            <h1>Voucher de Comida Diario</h1>
             <p class="intro">Completa los datos del huésped alojado para generar el voucher de cena.</p>
 
             <form id="mealVoucherForm">

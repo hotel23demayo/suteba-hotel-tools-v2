@@ -1,17 +1,11 @@
 (function () {
   const dropArea = document.getElementById('dropArea');
   const csvInput = document.getElementById('csvInput');
-  const pickCsvDownloadsBtn = document.getElementById('pickCsvDownloadsBtn');
-  const outputNameInput = document.getElementById('outputName');
   const generateBtn = document.getElementById('generateBtn');
-  const csvInfo = document.getElementById('csvInfo');
-  const templateInfo = document.getElementById('templateInfo');
   const status = document.getElementById('status');
-  const summary = document.getElementById('summary');
 
   let csvFile = null;
   let templateBytes = null;
-  let templateLabel = '';
   let groupedRecords = [];
 
   const mmToPt = (mm) => (72 / 25.4) * mm;
@@ -91,13 +85,14 @@
           passenger: normalize(holder['Apellido y nombre']).toUpperCase(),
           document: extractDocumentNumber(holder['Nro. doc.']),
           room: rooms.join(', '),
+          minRoom: Math.min(...rooms.map((room) => parseIntSafe(room, Number.MAX_SAFE_INTEGER))),
           fromDate: normalize(holder['Fecha de ingreso']),
           toDate: normalize(holder['Fecha de egreso']),
           pax: groupRows.length,
         };
       })
       .filter(Boolean)
-      .sort((a, b) => a.voucher.localeCompare(b.voucher, 'es', { numeric: true }));
+      .sort((a, b) => a.minRoom - b.minRoom);
 
     return records;
   }
@@ -117,8 +112,6 @@
     }
     const bytes = await response.arrayBuffer();
     templateBytes = bytes;
-    templateLabel = 'VOUCHER ALICANTE.pdf (por defecto)';
-    templateInfo.textContent = `Plantilla activa: ${templateLabel}`;
   }
 
   async function handleCsvFile(file) {
@@ -131,13 +124,12 @@
       csvFile = file;
       const rows = await parseCSV(file);
       groupedRecords = groupByVoucher(rows);
-      csvInfo.textContent = `CSV: ${file.name} — ${Math.round(file.size / 1024)} KB`;
-      summary.textContent = `Vouchers detectados: ${groupedRecords.length}`;
-      setStatus(`CSV cargado correctamente (${groupedRecords.length} vouchers)`);
+      dropArea.classList.toggle('loaded', groupedRecords.length > 0);
+      setStatus(`${file.name}: ${groupedRecords.length} vouchers listos para generar`);
       updateGenerateButtonState();
     } catch (error) {
       groupedRecords = [];
-      summary.textContent = '';
+      dropArea.classList.remove('loaded');
       setStatus(`Error en CSV: ${error.message}`, true);
       updateGenerateButtonState();
     }
@@ -220,8 +212,7 @@
         });
       }
 
-      const outNameRaw = normalize(outputNameInput.value) || 'Vouchers_Alicante_GUI.pdf';
-      const outName = outNameRaw.toLowerCase().endsWith('.pdf') ? outNameRaw : `${outNameRaw}.pdf`;
+      const outName = 'Vouchers_Alicante.pdf';
 
       const pdfBytes = await outputDoc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
@@ -234,7 +225,7 @@
       anchor.remove();
       setTimeout(() => URL.revokeObjectURL(url), 2000);
 
-      setStatus(`✅ PDF generado: ${outName}`);
+      setStatus('✅ PDF generado');
     } catch (error) {
       setStatus(`❌ Error generando PDF: ${error.message}`, true);
     } finally {
@@ -258,37 +249,6 @@
     }
   });
 
-  async function pickCsvPreferDownloads() {
-    if (typeof window.showOpenFilePicker !== 'function') {
-      csvInput.click();
-      return;
-    }
-
-    try {
-      const [fileHandle] = await window.showOpenFilePicker({
-        multiple: false,
-        startIn: 'downloads',
-        types: [
-          {
-            description: 'Archivos CSV',
-            accept: {
-              'text/csv': ['.csv'],
-            },
-          },
-        ],
-      });
-
-      const file = await fileHandle.getFile();
-      await handleCsvFile(file);
-    } catch (error) {
-      if (error && error.name === 'AbortError') {
-        return;
-      }
-      setStatus('No se pudo abrir Descargas en este navegador; usá el selector CSV normal', true);
-      csvInput.click();
-    }
-  }
-
   csvInput.addEventListener('change', (event) => {
     const files = event.target.files;
     if (files && files.length > 0) {
@@ -296,17 +256,15 @@
     }
   });
 
-  pickCsvDownloadsBtn.addEventListener('click', pickCsvPreferDownloads);
-
   generateBtn.addEventListener('click', generatePdf);
 
   loadDefaultTemplate()
     .then(() => {
-      setStatus('Plantilla por defecto cargada');
+      setStatus('Seleccioná el CSV de pasajeros');
       updateGenerateButtonState();
     })
     .catch(() => {
-      templateInfo.textContent = 'No se pudo precargar la plantilla por defecto';
+      setStatus('No se pudo cargar la plantilla de voucher', true);
       updateGenerateButtonState();
     });
 })();
