@@ -14,6 +14,11 @@
     return (value || '').toString().trim();
   }
 
+  // Quita la letra de asiento del bus (ej. "227 A" -> "227")
+  function cleanRoom(value) {
+    return normalize(value).replace(/[^\d]/g, '');
+  }
+
   function parseIntSafe(value, fallback = -1) {
     const parsed = parseInt(normalize(value), 10);
     return Number.isFinite(parsed) ? parsed : fallback;
@@ -75,7 +80,7 @@
         const rooms = Array.from(
           new Set(
             groupRows
-              .map((row) => normalize(row['Nro. habitación']))
+              .map((row) => cleanRoom(row['Nro. habitación']))
               .filter(Boolean)
           )
         ).sort((a, b) => a.localeCompare(b, 'es', { numeric: true }));

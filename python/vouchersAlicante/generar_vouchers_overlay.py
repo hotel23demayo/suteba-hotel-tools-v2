@@ -5,6 +5,7 @@ import argparse
 import csv
 import io
 import os
+import re
 from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass
@@ -73,7 +74,11 @@ def group_by_voucher(rows: Iterable[Dict[str, str]]) -> List[VoucherRecord]:
     records: List[VoucherRecord] = []
     for voucher, group_rows in groups.items():
         holder = select_holder(group_rows)
-        rooms = sorted({normalize(r.get("Nro. habitación")) for r in group_rows if normalize(r.get("Nro. habitación"))})
+        # Quita la letra de asiento del bus (ej. "227 A" -> "227")
+        rooms = sorted(
+            {re.sub(r"\D", "", normalize(r.get("Nro. habitación"))) for r in group_rows} - {""},
+            key=int,
+        )
 
         nro_doc = extract_document_number(holder.get("Nro. doc."))
 
