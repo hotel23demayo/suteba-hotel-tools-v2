@@ -14,7 +14,7 @@
             "y_from_bottom_mm": 246,
             "cover": {
                 "x_mm": 104,
-                "y_from_bottom_mm": 243.5,
+                "y_from_bottom_mm": 244.2,
                 "width_mm": 65,
                 "height_mm": 7
             }
@@ -30,10 +30,10 @@
         {
             "nombre": {"x_mm": 27, "y_from_bottom_mm": 257},
             "dni": {"x_mm": 22, "y_from_bottom_mm": 246},
-            "habitaciones": {"x_mm": 27, "y_from_bottom_mm": 233},
-            "fechaIngreso": {"x_mm": 96, "y_from_bottom_mm": 233},
-            "fechaEgreso": {"x_mm": 146, "y_from_bottom_mm": 233},
-            "cantidadPersonas": {"x_mm": 55, "y_from_bottom_mm": 228}
+            "habitaciones": {"x_mm": 27, "y_from_bottom_mm": 234},
+            "fechaIngreso": {"x_mm": 96, "y_from_bottom_mm": 234},
+            "fechaEgreso": {"x_mm": 146, "y_from_bottom_mm": 234},
+            "cantidadPersonas": {"x_mm": 55, "y_from_bottom_mm": 227.5}
         },
         {
             "nombre": {"x_mm": 27, "y_from_bottom_mm": 167},
